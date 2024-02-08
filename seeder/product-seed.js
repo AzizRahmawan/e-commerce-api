@@ -5,15 +5,20 @@ async function main() {
   await prisma.product.deleteMany();
   
   const category = await prisma.category.findMany();
+  const user = await prisma.user.findMany({
+    where: {
+      role_id: 3,
+    }
+  });
   for (let i = 1; i <= 10; i++) {
     await prisma.product.create({
       data: {
         id: i,
         name: faker.commerce.productName(),
         price: parseFloat(faker.commerce.price()),
-        stock: faker.datatype.number(100),
+        stock: faker.number.int(100),
         description: faker.lorem.sentence(),
-        seller_id: 1, // Sesuaikan dengan ID penjual yang ada di database
+        seller_id: user[Math.floor(Math.random() * user.length)].id, // Sesuaikan dengan ID penjual yang ada di database
         category_id: category[Math.floor(Math.random() * category.length)].id,
       },
     });
