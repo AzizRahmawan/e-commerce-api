@@ -9,3 +9,163 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id Int @id @default(autoincrement())
+  email String @unique
+  name String 
+  password String
+  is_blocked Boolean @default(false)
+  role_id Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  role Role @relation(fields: [role_id], references: [id])
+  products Product[]
+  tokens Token[]
+
+  @@map("users")
+}
+
+model Permission {
+  id Int @id @default(autoincrement())
+  name String @unique
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  roles PermissionRole[]
+
+  @@map("permissions")
+}
+
+model PermissionRole {
+  permission_id Int
+  role_id Int
+
+  permissions Permission @relation(fields: [permission_id], references: [id])
+  roles Role @relation(fields: [role_id], references: [id])
+
+  @@id([permission_id, role_id])
+  @@map("permission_role")
+}
+
+model Role {
+  id Int @id @default(autoincrement())
+  name String @unique
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  users User[]
+  permissions PermissionRole[]
+
+  @@map("roles")
+}
+
+model Token {
+  id Int @id @default(autoincrement())
+  user_id Int
+  token String @unique
+  expires_at DateTime
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  user User @relation(fields: [user_id], references: [id])
+
+  @@map("tokens")
+}
+
+model Category {
+  id Int @id @default(autoincrement())
+  name String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  products CategoryProduct[]
+
+  @@map("categories")
+}
+
+model CategoryProduct {
+  category_id Int
+  product_id Int
+
+  categories Category @relation(fields: [category_id], references: [id])
+  products Product @relation(fields: [product_id], references: [id])
+
+  @@id([category_id, product_id])
+  @@map("category_product")
+}
+
+model Product {
+  id Int @id @default(autoincrement())
+  name String 
+  price Float @db.Float @default(0)
+  category_id Int
+  stock Int 
+  description String? @db.Text
+  seller_id Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  seller User @relation(fields: [seller_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  categories CategoryProduct[]
+  carts CartProduct[]
+  order ItemOrder[]
+
+  @@map("products")
+}
+
+model Cart {
+  id Int @id @default(autoincrement())
+  user_id Int
+  quantity Int @default(1)
+  total Float @db.Float @default(0)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  products CartProduct[]
+
+  @@map("carts")
+}
+
+model CartProduct {
+  cart_id Int
+  product_id Int
+
+  carts Cart @relation(fields: [cart_id], references: [id])
+  products Product @relation(fields: [product_id], references: [id])
+
+  @@id([cart_id, product_id])
+  @@map("cart_product")
+}
+
+model Order {
+  id Int @id @default(autoincrement())
+  invoice String 
+  date DateTime @default(now())
+  total Float @db.Float @default(0)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  products ItemOrder[]
+
+  @@map("orders")
+}
+
+model ItemOrder {
+  id Int @id @default(autoincrement())
+  order_id Int
+  product_id Int
+  quantity Int @default(1)
+  price Float @db.Float @default(0)
+  total Float @db.Float @default(0)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  orders Order @relation(fields: [order_id], references: [id])
+  products Product @relation(fields: [product_id], references: [id])
+
+  @@index([order_id], map: "order_id")
+  @@index([product_id], map: "product_id")
+  @@map("item_order")
+}
