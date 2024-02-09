@@ -63,4 +63,16 @@ const authorizePermission = (permission) => {
     }
 }
 
-export { authToken, authorizePermission };
+const checkLogout = (req, res, next) => {
+    const sessionToken = req.cookies.sessionToken;
+  
+    if (sessionToken) {
+        return res.status(401).json({
+            message: 'You are already logged in. Logout before logging in again.',
+        });
+    }
+  
+    next();
+};
+
+export { authToken, authorizePermission, checkLogout };

@@ -90,7 +90,8 @@ class Product {
             throw Error('Add product is failed');
         }
     }
-    async updateProduct(id, name, price, description, category_id, stock, seller) {
+    
+    async updateProduct(id, updateData, seller) {
         try {
             const existingProduct = await prisma.product.findUnique({
                 where: {
@@ -113,15 +114,9 @@ class Product {
 
             const product = await prisma.product.update({
                 where: {
-                id,
+                    id,
                 },
-                data: {
-                name,
-                price,
-                description,
-                category_id,
-                stock,
-                },
+                data: {...updateData},
             });
             return product;
         } catch (error) {

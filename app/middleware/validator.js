@@ -1,4 +1,4 @@
-const validateTokenRequest = () => {
+const validateLoginRequest = (req, res, next) => {
     const errors = {};
     
     if (!req.body.email) {
@@ -16,4 +16,4 @@ const validateTokenRequest = () => {
     next();
 }
 
-export { validateTokenRequest };
+export default validateLoginRequest;

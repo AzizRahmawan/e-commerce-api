@@ -3,10 +3,12 @@ import prisma from '../prisma.js';
 import { Buffer } from "buffer";
 import randomstring from 'randomstring';
 import { Router } from 'express';
+import { checkLogout } from '../middleware/middleware.js';
+import validateLoginRequest from '../middleware/validator.js';
 
 const routes = Router();
 
-routes.post('/login', async (req, res) => {
+routes.post('/login', checkLogout, validateLoginRequest, async (req, res) => {
   try {
     const user = await prisma.user.findUnique({
       where: {
@@ -105,5 +107,4 @@ const generateSessionToken = () => {
     const token = Buffer.from(randomstring.generate()).toString('base64');
     return token;
 }
-
 export default routes;

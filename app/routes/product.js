@@ -39,9 +39,9 @@ routes.post('/products', authorizePermission(Permission.ADD_PRODUCT), async(req,
 routes.put('/products/:id', authorizePermission(Permission.EDIT_PRODUCT), async(req, res) => {
     try {
         const id = Number(req.params.id);
-        const { name, price, description, category_id, stock } = req.body;
+        const updateData = req.body;
         const seller = req.user;
-        const product = await productService.updateProduct(id, name, price, description, category_id, stock, seller);
+        const product = await productService.updateProduct(id, updateData, seller);
         res.json({ message: 'Product updated successfully', product });
     } catch (err) {
         res.status(500).json({ message: err.message });
