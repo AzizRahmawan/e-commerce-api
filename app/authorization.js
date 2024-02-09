@@ -5,6 +5,10 @@ export const Role = {
 };
 
 export const Permission = {
+  BROWSE_TOKENS: 'browse_tokens',
+  ADD_TOKEN: 'add_token',
+  READ_TOKEN: 'read_token',
+
   BROWSE_PRODUCTS: 'browse_products',
   READ_PRODUCT: 'read_product',
   EDIT_PRODUCT: 'edit_product',
@@ -44,6 +48,10 @@ export const Permission = {
 
 export const PermissionAssignment = {
   [Role.ADMINISTRATOR]: [
+    Permission.BROWSE_TOKENS,
+    Permission.ADD_TOKEN,
+    Permission.READ_TOKEN,
+
     Permission.BROWSE_PRODUCTS,
     Permission.READ_PRODUCT,
     Permission.EDIT_PRODUCT,

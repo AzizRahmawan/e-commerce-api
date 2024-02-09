@@ -1,13 +1,17 @@
 import express from 'express';
-// import tokenRoute from './app/router/token.js';
-// import protectedRoute from './app/router/protected.js';
+import productRoutes from './app/routes/product.js';
+import tokenRoutes from './app/routes/token.js';
+import authRoutes from './app/routes/authentication.js';
+import cookieParser from 'cookie-parser';
 
 const app = express();
 app.use(express.json());
+app.use(cookieParser())
 app.get('/', async (req, res) => {
     res.json({message: 'Ok'});
 });
-// app.use(tokenRoute);
-// app.use(protectedRoute);
+app.use(authRoutes);
+app.use(productRoutes);
+app.use(tokenRoutes);
 
 export default app;
