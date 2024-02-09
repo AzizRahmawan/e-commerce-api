@@ -1,7 +1,96 @@
-import BaseService from "./base-srevice.js";
+import prisma from "../prisma.js";
 
-class Product extends BaseService {
-
+class Product {
+    async get(){
+        const products = await prisma.product.findMany({
+            select: {
+                id: true,
+                name: true,
+                description: true,
+                price: true,
+                stock: true,
+                category: {
+                    select: {
+                        name: true,
+                    }
+                },
+                seller: {
+                    select: {
+                        name: true,
+                    }
+                },
+            }
+        });
+        if (Object.keys(products).length < 1) {
+            throw Error('List is empty');
+        }
+        const product = products.map((product) => {
+            return {
+                id: product.id,
+                name: product.name,
+                category: product.category.name,
+                seller: product.seller.name,
+                description: product.description,
+                price: product.price,
+                stock: product.stock,
+            }
+        })
+        return product;
+    }
+    async getById(id){
+        const product = await prisma.product.findUnique({
+            where: {
+                id: id
+            },
+            select: {
+                id: true,
+                name: true,
+                description: true,
+                price: true,
+                stock: true,
+                category: {
+                    select: {
+                        name: true,
+                    }
+                },
+                seller: {
+                    select: {
+                        name: true,
+                    }
+                },
+            }
+        });
+        if (!product) {
+            throw Error('Product not found');
+        }
+        return {
+            id: product.id,
+            name: product.name,
+            category: product.category.name,
+            seller: product.seller.name,
+            description: product.description,
+            price: product.price,
+            stock: product.stock,
+        }
+    }
+    async addProduct(name, price, description, category_id, stock, seller_id) {
+        try {
+          const product = await prisma.product.create({
+            data: {
+              name,
+              price,
+              description,
+              category_id,
+              stock,
+              seller_id
+            },
+          });
+          return product;
+        } catch (error) {
+          console.error('Error adding product in service:', error);
+          throw error;
+        }
+    }
 }
 
-export default new Product('product');
+export default new Product;

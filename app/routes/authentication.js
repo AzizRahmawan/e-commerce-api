@@ -3,7 +3,6 @@ import prisma from '../prisma.js';
 import { Buffer } from "buffer";
 import randomstring from 'randomstring';
 import { Router } from 'express';
-import jwt from 'jsonwebtoken';
 
 const routes = Router();
 
