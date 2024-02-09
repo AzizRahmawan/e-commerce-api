@@ -75,20 +75,58 @@ class Product {
     }
     async addProduct(name, price, description, category_id, stock, seller_id) {
         try {
-          const product = await prisma.product.create({
-            data: {
-              name,
-              price,
-              description,
-              category_id,
-              stock,
-              seller_id
-            },
-          });
-          return product;
+            const product = await prisma.product.create({
+                data: {
+                name,
+                price,
+                description,
+                category_id,
+                stock,
+                seller_id
+                },
+            });
+            return product;
         } catch (error) {
-          console.error('Error adding product in service:', error);
-          throw error;
+            throw Error('Add product is failed');
+        }
+    }
+    async updateProduct(id, name, price, description, category_id, stock, seller) {
+        try {
+            const existingProduct = await prisma.product.findUnique({
+                where: {
+                    id,
+                },
+                select: {
+                    seller_id: true,
+                },
+            });
+    
+            if (!existingProduct) {
+                throw Error('Product not found');
+            }
+
+            if (seller.role_id !== 1) {
+                if (existingProduct.seller_id !== seller.id) {
+                    throw Error('Unauthorized: You are not the seller of this product');
+                }
+            }
+
+            const product = await prisma.product.update({
+                where: {
+                id,
+                },
+                data: {
+                name,
+                price,
+                description,
+                category_id,
+                stock,
+                },
+            });
+            return product;
+        } catch (error) {
+            console.error('Error updating product in service:', error);
+            throw error;
         }
     }
 }
