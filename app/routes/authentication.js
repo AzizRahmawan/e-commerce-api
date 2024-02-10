@@ -8,6 +8,11 @@ import validateLoginRequest from '../middleware/validator.js';
 
 const routes = Router();
 
+const generateSessionToken = () => {
+  const token = Buffer.from(randomstring.generate()).toString('base64');
+  return token;
+}
+
 routes.post('/login', checkLogout, validateLoginRequest, async (req, res) => {
   try {
     const user = await prisma.user.findUnique({
@@ -35,7 +40,7 @@ routes.post('/login', checkLogout, validateLoginRequest, async (req, res) => {
         message: 'Invalid credentials',
       });
     }
-
+    let sessionToken = '';
     const existingToken = await prisma.token.findFirst({
       where: {
         user_id: user.id,
@@ -45,32 +50,20 @@ routes.post('/login', checkLogout, validateLoginRequest, async (req, res) => {
       },
     });
 
-    if (existingToken) {
-      res.cookie('sessionToken', existingToken.token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 3600000,
+    if (!existingToken) {
+      const createToken = generateSessionToken();
+      await prisma.token.create({
+        data: {
+          user_id: user.id,
+          token: createToken,
+          expires_at: new Date(new Date().getTime() + 30 * 24 * 3600 * 1000),
+        },
       });
-
-      return res.json({
-        message: 'Login successful',
-        userId: user.id,
-        userName: user.name,
-        token: existingToken.token,
-      });
+      sessionToken = createToken;
+    } 
+    else {
+      sessionToken = existingToken.token;
     }
-
-    const sessionToken = generateSessionToken();
-
-    await prisma.token.create({
-      data: {
-        user_id: user.id,
-        token: sessionToken,
-        expires_at: new Date(new Date().getTime() + 30 * 24 * 3600 * 1000),
-      },
-    });
-
     res.cookie('sessionToken', sessionToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -78,17 +71,14 @@ routes.post('/login', checkLogout, validateLoginRequest, async (req, res) => {
       maxAge: 3600000,
     });
 
-    res.json({
+    return res.json({
       message: 'Login successful',
       userId: user.id,
       userName: user.name,
-      token: sessionToken
+      token: sessionToken,
     });
   } catch (error) {
-    console.error('Error during login:', error);
-    res.status(500).json({
-      message: 'Internal Server Error',
-    });
+    res.status(500).json({error: error.message});
   }
 });
 
@@ -102,9 +92,4 @@ routes.post('/logout', (req, res) => {
   
     res.json({message: 'Logout successful'});
 });
-
-const generateSessionToken = () => {
-    const token = Buffer.from(randomstring.generate()).toString('base64');
-    return token;
-}
 export default routes;

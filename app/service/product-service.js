@@ -101,7 +101,7 @@ class Product {
             throw Error('Product not found');
         }
 
-        if (seller.role_id !== 1) {
+        if (seller.role.name !== Role.ADMINISTRATOR) {
             if (existingProduct.seller_id !== seller.id) {
                 throw Error('Unauthorized: You are not the seller of this product');
             }
@@ -127,7 +127,7 @@ class Product {
         if (!existingProduct) {
             throw Error('Product does not exist');
         }
-        if (seller.role_id!== 1) {
+        if (seller.role.name !== Role.ADMINISTRATOR) {
             if (existingProduct.seller_id!== seller.id) {
                 throw Error('Unauthorized: You are not the seller of this product');
             }

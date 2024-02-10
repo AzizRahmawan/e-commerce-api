@@ -30,7 +30,7 @@ routes.post('/products', authorizePermission(Permission.ADD_PRODUCT), async(req,
         const { name, price, description, category_id, stock } = req.body;
         const seller = req.user;
         const product = await productService.addProduct(name, price, description, category_id, stock, seller);
-        res.json({ message: 'Product added successfully', product, seller });
+        res.json({ message: 'Product added successfully', product});
     } catch (error) {
         res.status(500).json({ message: 'Internal Server Error' });
     }

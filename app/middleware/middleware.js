@@ -17,7 +17,11 @@ const authToken = async (req, res, next) => {
                     email: true,
                     name: true,
                     is_blocked: true,
-                    role_id: true
+                    role: {
+                        select: {
+                            name: true,
+                        }
+                    }
                 }
             }
         }
