@@ -1,3 +1,4 @@
+import { Role } from "../authorization.js";
 import prisma from "../prisma.js";
 
 class Product {
@@ -73,56 +74,66 @@ class Product {
             stock: product.stock,
         }
     }
-    async addProduct(name, price, description, category_id, stock, seller_id) {
-        try {
-            const product = await prisma.product.create({
-                data: {
-                name,
-                price,
-                description,
-                category_id,
-                stock,
-                seller_id
-                },
-            });
-            return product;
-        } catch (error) {
-            throw Error('Add product is failed');
-        }
+    async addProduct(name, price, description, category_id, stock, seller) {
+        const product = await prisma.product.create({
+            data: {
+            name,
+            price,
+            description,
+            category_id,
+            stock,
+            seller_id: seller.id
+            },
+        });
+        return product;
     }
-    
     async updateProduct(id, updateData, seller) {
-        try {
-            const existingProduct = await prisma.product.findUnique({
-                where: {
-                    id,
-                },
-                select: {
-                    seller_id: true,
-                },
-            });
-    
-            if (!existingProduct) {
-                throw Error('Product not found');
-            }
+        const existingProduct = await prisma.product.findUnique({
+            where: {
+                id,
+            },
+            select: {
+                seller_id: true,
+            },
+        });
 
-            if (seller.role_id !== 1) {
-                if (existingProduct.seller_id !== seller.id) {
-                    throw Error('Unauthorized: You are not the seller of this product');
-                }
-            }
-
-            const product = await prisma.product.update({
-                where: {
-                    id,
-                },
-                data: {...updateData},
-            });
-            return product;
-        } catch (error) {
-            console.error('Error updating product in service:', error);
-            throw error;
+        if (!existingProduct) {
+            throw Error('Product not found');
         }
+
+        if (seller.role_id !== 1) {
+            if (existingProduct.seller_id !== seller.id) {
+                throw Error('Unauthorized: You are not the seller of this product');
+            }
+        }
+
+        const product = await prisma.product.update({
+            where: {
+                id,
+            },
+            data: {...updateData},
+        });
+        return product;
+    }
+    async deleteProduct(id, seller) {
+        const existingProduct = await prisma.product.findUnique({
+            where: {
+                id,
+            },
+            select: {
+                seller_id: true,
+            }
+        })
+        if (!existingProduct) {
+            throw Error('Product does not exist');
+        }
+        if (seller.role_id!== 1) {
+            if (existingProduct.seller_id!== seller.id) {
+                throw Error('Unauthorized: You are not the seller of this product');
+            }
+        }
+        await prisma.product.delete({where: {id}})
+        return;
     }
 }
 

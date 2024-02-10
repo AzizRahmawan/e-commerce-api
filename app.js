@@ -1,6 +1,5 @@
 import express from 'express';
 import productRoutes from './app/routes/product.js';
-import tokenRoutes from './app/routes/token.js';
 import authRoutes from './app/routes/authentication.js';
 import cookieParser from 'cookie-parser';
 
@@ -12,6 +11,5 @@ app.get('/', async (req, res) => {
 });
 app.use(authRoutes);
 app.use(productRoutes);
-app.use(tokenRoutes);
 
 export default app;

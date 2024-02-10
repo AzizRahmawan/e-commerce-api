@@ -28,9 +28,9 @@ routes.get('/products/:id', authorizePermission(Permission.READ_PRODUCT), async 
 routes.post('/products', authorizePermission(Permission.ADD_PRODUCT), async(req, res) => {
     try {
         const { name, price, description, category_id, stock } = req.body;
-        const seller_id = req.user.id;
-        const product = await productService.addProduct(name, price, description, category_id, stock, seller_id);
-        res.json({ message: 'Product added successfully', product });
+        const seller = req.user;
+        const product = await productService.addProduct(name, price, description, category_id, stock, seller);
+        res.json({ message: 'Product added successfully', product, seller });
     } catch (error) {
         res.status(500).json({ message: 'Internal Server Error' });
     }
@@ -45,6 +45,17 @@ routes.put('/products/:id', authorizePermission(Permission.EDIT_PRODUCT), async(
         res.json({ message: 'Product updated successfully', product });
     } catch (err) {
         res.status(500).json({ message: err.message });
+    }
+});
+
+routes.delete('/products/:id', authorizePermission(Permission.DELETE_PRODUCT), async (req, res) => {
+    try {
+        const id = Number(req.params.id);
+        const seller = req.user;
+        await productService.deleteProduct(id, seller);
+        res.json({ message: 'Product deleted successfully' });
+    } catch (err) {
+        res.json({ message: err.message });
     }
 });
 
