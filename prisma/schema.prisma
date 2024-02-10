@@ -106,9 +106,7 @@ model Product {
 
 model Cart {
   id Int @id @default(autoincrement())
-  user_id Int
-  quantity Int @default(1)
-  total Float @db.Float @default(0)
+  user_id Int @unique
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
@@ -120,6 +118,7 @@ model Cart {
 model CartProduct {
   cart_id Int
   product_id Int
+  quantity Int @default(1)
 
   carts Cart @relation(fields: [cart_id], references: [id])
   products Product @relation(fields: [product_id], references: [id])

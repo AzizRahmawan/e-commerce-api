@@ -1,6 +1,7 @@
 import express from 'express';
 import productRoutes from './app/routes/product.js';
 import authRoutes from './app/routes/authentication.js';
+import cartRoutes from './app/routes/cart.js'
 import cookieParser from 'cookie-parser';
 
 const app = express();
@@ -11,5 +12,6 @@ app.get('/', async (req, res) => {
 });
 app.use(authRoutes);
 app.use(productRoutes);
+app.use(cartRoutes);
 
 export default app;
