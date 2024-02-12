@@ -21,6 +21,7 @@ class User {
             id: user.id,
             name: user.name,
             email: user.email,
+            is_blocked: user.is_blocked,
             role: user.role.name
         }));
         return listUser;
@@ -41,6 +42,31 @@ class User {
             id: user.id,
             name: user.name,
             email: user.email,
+            is_blocked: user.is_blocked,
+            role: user.role.name
+        }
+        return dataUser;
+    }
+    async updateStatusUser(id, is_block) {
+        const user = await prisma.user.update({
+            where: {
+                id: id,
+            },
+            data: {
+                is_blocked: is_block,
+            },
+            include: {
+                role: true,
+            },
+        });
+        if (!user) {
+            throw Error ('User not found');
+        }
+        const dataUser = {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            is_blocked: user.is_blocked,
             role: user.role.name
         }
         return dataUser;

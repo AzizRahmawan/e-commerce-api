@@ -25,4 +25,15 @@ routes.get('/user/:id', authorizePermission(Permission.READ_USER), async(req, re
     }
 });
 
+routes.patch('/user/:id', authorizePermission(Permission.EDIT_USER), async(req, res) => {
+    try {
+        const user_id = Number(req.params.id);
+        const { is_block } = req.body;
+        const user = await userService.updateStatusUser(user_id, is_block);
+        res.json({ message: 'User updated successfully', user });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+})
+
 export default routes;
