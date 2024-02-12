@@ -1,10 +1,20 @@
 import prisma from "../prisma.js";
 
 class Cart {
-    async getUserCart(user) {
+    async getCart () {
+        const cart = await prisma.cart.findMany({
+            select: {
+                id: true,
+                user_id: true,
+                products: true,
+            }
+        });
+        return cart;
+    }
+    async getUserCart(user_id) {
         const cart = await prisma.cart.findUnique({
             where: {
-                user_id: user.id,
+                user_id: user_id,
             },
         });
 

@@ -6,11 +6,6 @@ import productService from "../../service/product-service.js"
 const routes = Router();
 routes.use(authAdminToken);
 
-routes.get('/profile', async (req, res) => {
-    const user = req.user;
-    res.json(user);
-});
-
 routes.get("/products", authorizePermission(Permission.BROWSE_PRODUCTS), async (req, res) => {
     try {        
         const product = await productService.get();

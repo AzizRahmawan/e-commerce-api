@@ -8,8 +8,8 @@ routes.use(authToken);
 
 routes.get('/cart', authorizePermission(Permission.BROWSE_CART), async (req, res) => {
     try {
-        const user = req.user;
-        const userCart = await cartService.getUserCart(user);
+        const user_id = req.user.id;
+        const userCart = await cartService.getUserCart(user_id);
         
         res.json({cart: userCart});
     } catch (err) {
