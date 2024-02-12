@@ -10,8 +10,7 @@ const generateSessionToken = () => {
 };
 
 class AuthService {
-    async loginUser(email, password) {
-        let sessionToken = '';
+    async getUser(email, password) {
         const user = await prisma.user.findUnique({
             where: {
             email: email,
@@ -20,7 +19,6 @@ class AuthService {
             role: true,
             },
         });
-
         if (!user) {
             throw Error ('User not found');
         }
@@ -28,25 +26,27 @@ class AuthService {
         if (user.is_blocked) {
             throw Error ('Your account is blocked');
         }
-        // if (user.role.name !== Role.ADMINISTRATOR) {
-        //     throw Error ('You are not allowed to access');
-        // }
         const validPassword = bcrypt.compareSync(password, user.password);
         if (!validPassword) {
             throw Error ('Invalid credentials');
         }
+        return user;
+    }
+    async getToken(user_id){
+        let sessionToken = '';
         const existingToken = await prisma.token.findFirst({
             where: {
-            user_id: user.id,
+            user_id: user_id,
             },
         });
-        if (!existingToken) {
-            throw Error('You must Register');
-        } else if (existingToken.expires_at < new Date()) {
+        // if (!existingToken) {
+        //     throw Error('You must Register');
+        // } else 
+        if (!existingToken || (existingToken && existingToken.expires_at < new Date())) {
             const createToken = generateSessionToken();
             await prisma.token.create({
             data: {
-                user_id: user.id,
+                user_id: user_id,
                 token: createToken,
                 expires_at: new Date(new Date().getTime() + 30 * 24 * 3600 * 1000),
             },
@@ -56,6 +56,14 @@ class AuthService {
         else {
             sessionToken = existingToken.token;
         }
+        return sessionToken;
+    }
+    async loginUser(email, password) {
+        const user = await this.getUser(email, password);
+        if (user.role.name !== Role.REGULAR_USER && user.role.name !== Role.SELLER) {
+            throw Error ('You are not allowed to access');
+        }
+        const sessionToken = await this.getToken(user.id);
         const userData = {
             message: 'Login successful',
             userEmail: user.email,
@@ -63,6 +71,20 @@ class AuthService {
             token: sessionToken,
         };
         return userData;
+    }
+    async loginAdmin(email, password) {
+        const admin = await this.getUser(email, password);
+        if (admin.role.name !== Role.ADMINISTRATOR) {
+            throw Error ('You are not admin');
+        }
+        const sessionToken = await this.getToken(admin.id);
+        const adminData = {
+            message: 'Login successful',
+            userEmail: admin.email,
+            userName: admin.name,
+            token: sessionToken,
+        };
+        return adminData;
     }
 }
 
