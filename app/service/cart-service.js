@@ -170,6 +170,15 @@ class Cart {
         });
         return;
     }
+    async clearCart(cart_id, user) {
+        return await prisma.cartProduct.deleteMany({
+            where: {
+                carts: {
+                    user_id: user,
+                }
+            }
+        });
+    }
 }
 
 export default new Cart();

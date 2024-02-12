@@ -56,4 +56,16 @@ routes.delete('/cart/:id', authorizePermission(Permission.REMOVE_FROM_CART), asy
     }
 });
 
+routes.delete('/clear/cart', authorizePermission(Permission.REMOVE_FROM_CART), async (req, res) => {
+    try {
+        const user = req.user.id;
+        const cart_id = Number(req.params.id);
+        await cartService.clearCart(cart_id, user);
+        
+        res.json({message: "Successfully clear cart"});
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 export default routes;
