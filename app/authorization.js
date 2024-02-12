@@ -98,6 +98,7 @@ export const PermissionAssignment = {
     Permission.ADD_TO_CART,
     Permission.REMOVE_FROM_CART,
     Permission.CLEAR_CART,
+    
     Permission.BROWSE_ORDERS,
     Permission.CREATE_ORDER,
     Permission.CANCEL_ORDER,

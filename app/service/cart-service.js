@@ -1,6 +1,5 @@
 import prisma from "../prisma.js";
 
-// Cart.js
 class Cart {
     async getUserCart(user) {
         const cart = await prisma.cart.findUnique({
@@ -52,6 +51,124 @@ class Cart {
         }));
         const total = listProduct.reduce((acc, item) => acc + item.total, 0);
         return {products: listProduct, total};
+    }
+    async addProductToCart(productId, quantity, user) {
+        const cart = await prisma.cart.findUnique({
+            where: {
+                user_id: user.id,
+            },
+        });
+        if (!cart) {
+            await prisma.cart.create({
+                data: {
+                    user_id: user.id,
+                }
+            });
+        }
+        const checkProduct = await prisma.product.findUnique({
+            where: {
+                id: productId,
+                stock: {
+                    gt: 0
+                }
+            },
+        });
+        if (!checkProduct) {
+            throw Error('Product not found or stock 0');
+        }
+        const productCart = await prisma.cartProduct.findFirst({
+            where: {
+                cart_id: cart.id,
+                product_id: productId,
+            }
+        });
+        if (!productCart) {
+            return await prisma.cartProduct.create({
+                data: {
+                    cart_id: cart.id,
+                    product_id: productId,
+                    quantity: quantity
+                },
+                include: {
+                    products: true,
+                }
+            });
+        }
+        return await prisma.cartProduct.update({
+            where: {
+                cart_id_product_id: {
+                    cart_id: productCart.cart_id,
+                    product_id: productCart.product_id
+                }
+            },
+            data: {
+                quantity: productCart.quantity + quantity
+            },
+            include: {
+                products: true,
+            }
+        });
+    }
+    async updateProductInCart(productId, quantity, user) {
+        const cart = await prisma.cart.findUnique({
+            where: {
+                user_id: user.id,
+            },
+        });
+        if (!cart) {
+            throw Error('Cart not found');
+        }
+        const productCart = await prisma.cartProduct.findFirst({
+            where: {
+                cart_id: cart.id,
+                product_id: productId,
+            }
+        });
+        if (!productCart) {
+            throw Error('Product not found in cart');
+        }
+        return await prisma.cartProduct.update({
+            where: {
+                cart_id_product_id: {
+                    cart_id: productCart.cart_id,
+                    product_id: productCart.product_id
+                }
+            },
+            data: {
+                quantity: quantity
+            },
+            include: {
+                products: true,
+            }
+        });
+    }
+    async removeProductFromCart(productId, user) {
+        const cart = await prisma.cart.findUnique({
+            where: {
+                user_id: user.id,
+            },
+        });
+        if (!cart) {
+            throw Error('Cart not found');
+        }
+        const productCart = await prisma.cartProduct.findFirst({
+            where: {
+                cart_id: cart.id,
+                product_id: productId,
+            }
+        });
+        if (!productCart) {
+            throw Error('Product not found in cart');
+        }
+        await prisma.cartProduct.delete({
+            where: {
+                cart_id_product_id: {
+                    cart_id: productCart.cart_id,
+                    product_id: productCart.product_id
+                }
+            }
+        });
+        return;
     }
 }
 
