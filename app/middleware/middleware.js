@@ -1,13 +1,14 @@
 import prisma from "../prisma.js";
-import bcrypt from "bcrypt";
 
-const authToken = async (req, res, next) => {
-    const token = req.cookies.sessionToken;
+const validateToken = async (req, res, next, isAdmin) => {
+    const token = isAdmin ? req.cookies.sessionAdminToken : req.cookies.sessionToken;
+    
     if (!token) {
         return res.status(401).json({
             message: 'You must be logged in'
         });
     }
+
     const validToken = await prisma.token.findUnique({
         where: { token },
         include: {
@@ -26,24 +27,42 @@ const authToken = async (req, res, next) => {
             }
         }
     });
+
     if (!validToken) {
         return res.status(401).json({
-            message: 'You are is not allowed to access this'
+            message: 'You are not allowed to access this'
         });
     }
+
     if (validToken.user.is_blocked) {
         return res.status(401).json({
             message: 'Your account is blocked', data : validToken.user,
         });
     }
+
     if (validToken.expires_at < new Date()) {
         return res.status(401).json({
             message: 'Your session has expired'
         });
     }
+
     req.user = validToken.user;
+
+    if (isAdmin) {
+        req.isAdmin = true;
+    }
+
     next();
-}
+};
+
+const authToken = async (req, res, next) => {
+    await validateToken(req, res, next, false);
+};
+
+const authAdminToken = async (req, res, next) => {
+    await validateToken(req, res, next, true);
+};
+
 
 const authorizePermission = (permission) => {
     return async (req, res, next) => {
@@ -79,4 +98,16 @@ const checkLogout = (req, res, next) => {
     next();
 };
 
-export { authToken, authorizePermission, checkLogout };
+const checkAdminLogout = (req, res, next) => {
+    const sessionToken = req.cookies.sessionAdminToken;
+  
+    if (sessionToken) {
+      return res.status(401).json({
+        message: 'You are already logged in. Logout before logging in again.',
+      });
+    }
+  
+    next();
+};
+
+export { authToken, authAdminToken, authorizePermission, checkLogout, checkAdminLogout };
