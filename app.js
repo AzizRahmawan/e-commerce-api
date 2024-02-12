@@ -2,6 +2,7 @@ import express from 'express';
 import adminAuthRoutes from './app/routes/admin/authentication.js';
 import adminProductRoutes from './app/routes/admin/product.js';
 import adminCartRoutes from './app/routes/admin/cart.js';
+import adminUserRoutes from './app/routes/admin/user.js';
 import authRoutes from './app/routes/authentication.js';
 import productRoutes from './app/routes/product.js';
 import cartRoutes from './app/routes/cart.js'
@@ -16,6 +17,7 @@ app.get('/', async (req, res) => {
 app.use('/admin', adminAuthRoutes);
 app.use('/admin', adminProductRoutes);
 app.use('/admin', adminCartRoutes);
+app.use('/admin', adminUserRoutes);
 app.use(authRoutes);
 app.use(productRoutes);
 app.use(cartRoutes);

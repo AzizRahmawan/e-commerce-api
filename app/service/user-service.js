@@ -5,9 +5,10 @@ class User {
     async getUser() {
         const user = await prisma.user.findMany({
             where: {
-            role: {
-                name: Role.REGULAR_USER || Role.SELLER
-            }
+                OR: [
+                    { role: { name: Role.REGULAR_USER } },
+                    { role: { name: Role.SELLER } }
+                ]
             },
             include: {
                 role: true,

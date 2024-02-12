@@ -180,7 +180,7 @@ class Cart {
         });
         return;
     }
-    async clearCart(cart_id, user) {
+    async clearCart(user) {
         return await prisma.cartProduct.deleteMany({
             where: {
                 carts: {
