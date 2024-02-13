@@ -39,9 +39,6 @@ class AuthService {
             user_id: user_id,
             },
         });
-        // if (!existingToken) {
-        //     throw Error('You must Register');
-        // } else 
         if (!existingToken || (existingToken && existingToken.expires_at < new Date())) {
             const createToken = generateSessionToken();
             await prisma.token.create({

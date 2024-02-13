@@ -2,8 +2,22 @@ import { Role } from "../authorization.js";
 import prisma from "../prisma.js";
 
 class User {
+    async getUserData(user) {
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            is_blocked: user.is_blocked,
+            role: user.role.name
+        };
+    }
+
     async getUser() {
-        const user = await prisma.user.findMany({
+        const users = await prisma.user.findMany({
             where: {
                 OR: [
                     { role: { name: Role.REGULAR_USER } },
@@ -14,18 +28,11 @@ class User {
                 role: true,
             },
         });
-        if (!user) {
-            throw Error ('User not found');
-        }
-        const listUser = user.map(user => ({
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            is_blocked: user.is_blocked,
-            role: user.role.name
-        }));
-        return listUser;
+
+        const listUsers = users.map(user => this.getUserData(user));
+        return Promise.all(listUsers);
     }
+
     async getUserById(id) {
         const user = await prisma.user.findUnique({
             where: {
@@ -35,18 +42,10 @@ class User {
                 role: true,
             },
         });
-        if (!user) {
-            throw Error ('User not found');
-        }
-        const dataUser = {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            is_blocked: user.is_blocked,
-            role: user.role.name
-        }
-        return dataUser;
+
+        return this.getUserData(user);
     }
+
     async updateStatusUser(id, is_block) {
         const user = await prisma.user.update({
             where: {
@@ -59,18 +58,22 @@ class User {
                 role: true,
             },
         });
-        if (!user) {
-            throw Error ('User not found');
-        }
-        const dataUser = {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            is_blocked: user.is_blocked,
-            role: user.role.name
-        }
-        return dataUser;
+
+        return this.getUserData(user);
     }
+
+    // async deleteUser(id) {
+    //     const user = await prisma.user.delete({
+    //         where: {
+    //             id: id,
+    //         },
+    //         include: {
+    //             role: true,
+    //         },
+    //     });
+
+    //     return this.getUserData(user);
+    // }
 }
 
 export default new User;

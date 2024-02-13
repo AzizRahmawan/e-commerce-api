@@ -1,6 +1,6 @@
 import { Router } from "express";
 import prisma from "../prisma.js";
-import { authToken, authorizePermission } from "../middleware/middleware.js";
+import { authToken, authorizePermission } from "../middleware/auth.js";
 import { Permission } from "../authorization.js";
 import productService from "../service/product-service.js"
 

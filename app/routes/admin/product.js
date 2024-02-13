@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { authAdminToken, authorizePermission } from "../../middleware/middleware.js";
+import { authAdminToken, authorizePermission } from "../../middleware/auth.js";
 import { Permission } from "../../authorization.js";
 import productService from "../../service/product-service.js"
 

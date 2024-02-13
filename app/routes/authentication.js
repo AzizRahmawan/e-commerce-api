@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { checkLogout } from '../middleware/middleware.js';
+import { checkLogout } from '../middleware/auth.js';
 import validateLoginRequest from '../middleware/validator.js';
 import authService from '../service/auth-service.js';
 

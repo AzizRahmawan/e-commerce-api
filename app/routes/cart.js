@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { authToken, authorizePermission } from "../middleware/middleware.js";
+import { authToken, authorizePermission } from "../middleware/auth.js";
 import { Permission } from "../authorization.js";
 import cartService from "../service/cart-service.js";
 
