@@ -115,15 +115,9 @@ export const PermissionAssignment = {
 
     Permission.BROWSE_SELLER,
     Permission.READ_SELLER,
-    Permission.EDIT_SELLER,
-    Permission.ADD_SELLER,
-    Permission.DELETE_SELLER,
 
     Permission.BROWSE_CATEGORIES,
     Permission.READ_CATEGORY,
-    Permission.EDIT_CATEGORY,
-    Permission.ADD_CATEGORY,
-    Permission.DELETE_CATEGORY,
 
     Permission.BROWSE_ORDERS,
     Permission.VIEW_ORDER_DETAILS,

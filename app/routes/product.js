@@ -7,6 +7,14 @@ import productService from "../service/product-service.js"
 const routes = Router();
 routes.use(authToken);
 
+routes.get('/profile', async (req, res) => {
+    try {
+        const user = req.user;
+        res.json(user);
+    } catch (err) {
+        res.status(404).json({ error: err.message });
+    }
+});
 routes.get("/products", authorizePermission(Permission.BROWSE_PRODUCTS), async (req, res) => {
     try {        
         const product = await productService.get();
@@ -31,8 +39,8 @@ routes.post('/products', authorizePermission(Permission.ADD_PRODUCT), async(req,
         const seller = req.user;
         const product = await productService.addProduct(name, price, description, category_id, stock, seller);
         res.json({ message: 'Product added successfully', product});
-    } catch (error) {
-        res.status(500).json({ message: 'Internal Server Error' });
+    } catch (err) {
+        res.status(500).json({ message: err.message});
     }
 });
 

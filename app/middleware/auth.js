@@ -20,6 +20,7 @@ const validateToken = async (req, res, next, isAdmin) => {
                     is_blocked: true,
                     role: {
                         select: {
+                            id: true,
                             name: true,
                         }
                     }
@@ -66,25 +67,35 @@ const authAdminToken = async (req, res, next) => {
 
 const authorizePermission = (permission) => {
     return async (req, res, next) => {
-        if (!req.user) {
-            return res.status(401).json({
-                message: 'Unauthorized'
-            });
-        }
-        const permissionRecords = await prisma.permissionRole.findMany({
-            where: { role_id: req.user.role_id },
-            include: { permissions: true }
-        });
-        const permissions = permissionRecords.map((record) => record.permissions.name);
-        if (!permissions.includes(permission)) {
-            return res.status(403).json({
-                message: 'Forbidden permission'
-            });
-        }
+        try {
+            if (!req.user) {
+                return res.status(401).json({
+                    message: 'Unauthorized'
+                });
+            }
 
-        next();
-    }
-}
+            const permissionRecords = await prisma.permissionRole.findMany({
+                where: { role_id: req.user.role.id },
+                include: { permissions: true }
+            });
+
+            const permissions = permissionRecords.map((record) => record.permissions.name);
+
+            if (!permissions.includes(permission)) {
+                return res.status(403).json({
+                    message: 'Forbidden permission'
+                });
+            }
+
+            next();
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                message: 'Internal Server Error'
+            });
+        }
+    };
+};
 
 const checkLogout = (req, res, next) => {
     const sessionToken = req.cookies.sessionToken;
