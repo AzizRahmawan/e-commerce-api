@@ -76,7 +76,7 @@ model Token {
 
 model Category {
   id Int @id @default(autoincrement())
-  name String
+  name String @unique
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 

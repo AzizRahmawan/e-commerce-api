@@ -91,7 +91,7 @@ class Product {
     async deleteProduct(id, seller) {
         const existingProduct = await this.findProductById(id);
         this.checkSellerAuthorization(seller, existingProduct);
-    
+        await prisma.cartProduct.deleteMany({ where: { product_id: id }});
         await prisma.product.delete({ where: { id } });
         return;
     }
