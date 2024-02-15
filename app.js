@@ -6,6 +6,7 @@ import adminUserRoutes from './app/routes/admin/user.js';
 import authRoutes from './app/routes/authentication.js';
 import productRoutes from './app/routes/product.js';
 import cartRoutes from './app/routes/cart.js'
+import orderRoutes from './app/routes/order.js';
 import cookieParser from 'cookie-parser';
 
 const app = express();
@@ -21,5 +22,6 @@ app.use('/admin', adminUserRoutes);
 app.use(authRoutes);
 app.use(productRoutes);
 app.use(cartRoutes);
+app.use(orderRoutes);
 
 export default app;

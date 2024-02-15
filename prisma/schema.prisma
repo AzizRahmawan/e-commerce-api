@@ -23,6 +23,7 @@ model User {
   role Role @relation(fields: [role_id], references: [id])
   products Product[]
   tokens Token[]
+  orders Order[]
 
   @@map("users")
 }
@@ -132,10 +133,13 @@ model Order {
   invoice String 
   date DateTime @default(now())
   total Float @db.Float @default(0)
+  status Boolean @default(false)
+  user_id Int
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
   products ItemOrder[]
+  users User @relation(fields: [user_id], references: [id])
 
   @@map("orders")
 }

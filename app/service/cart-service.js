@@ -9,6 +9,9 @@ class Cart {
                 products: true,
             }
         });
+        if (Object.keys(cart).length < 1) {
+            throw Error('Cart is empty');
+        }
         return cart;
     }
     async getUserCart(user_id) {
@@ -180,11 +183,11 @@ class Cart {
         });
         return;
     }
-    async clearCart(user) {
+    async clearCart(user_id) {
         return await prisma.cartProduct.deleteMany({
             where: {
                 carts: {
-                    user_id: user,
+                    user_id: user_id
                 }
             }
         });
