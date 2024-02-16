@@ -18,7 +18,7 @@ async function main() {
         price: parseFloat(faker.commerce.price()),
         stock: faker.number.int(100),
         description: faker.lorem.sentence(),
-        seller_id: user[Math.floor(Math.random() * user.length)].id, // Sesuaikan dengan ID penjual yang ada di database
+        seller_id: user[Math.floor(Math.random() * user.length)].id,
         category_id: category[Math.floor(Math.random() * category.length)].id,
       },
     });

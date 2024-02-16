@@ -44,6 +44,10 @@ class Product {
             take: limit,
             skip: offset,
         });
+
+        if (products < 1) {
+            throw new Error("Products not found");
+        }
     
         const totalCount = await prisma.product.count({
             where: whereCondition,
@@ -109,20 +113,20 @@ class Product {
     
         const product = await prisma.product.update({
             where: {
-            id,
+                id,
             },
             data: { ...updateData },
             include: {
-            category: {
-                select: {
-                name: true,
+                category: {
+                    select: {
+                        name: true,
+                    },
                 },
-            },
-            seller: {
-                select: {
-                name: true,
+                seller: {
+                    select: {
+                        name: true,
+                    },
                 },
-            },
             },
         });
     
@@ -135,12 +139,6 @@ class Product {
         await prisma.cartProduct.deleteMany({ where: { product_id: id }});
         await prisma.product.delete({ where: { id } });
         return;
-    }
-  
-    checkListNotEmpty(list) {
-        if (Object.keys(list).length < 1) {
-            throw new Error('List is empty');
-        }
     }
   
     checkProductExists(product) {
@@ -159,6 +157,21 @@ class Product {
             price: product.price,
             stock: product.stock,
         };
+    }
+      
+    async findProductById(id) {
+        const product = await prisma.product.findUnique({
+            where: {
+            id,
+            },
+            select: {
+            seller_id: true,
+            },
+        });
+    
+        this.checkProductExists(product);
+    
+        return product;
     }
   
     checkSellerAuthorization(seller, existingProduct) {

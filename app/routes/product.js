@@ -61,8 +61,8 @@ routes.delete('/products/:id', authorizePermission(Permission.DELETE_PRODUCT), a
     try {
         const id = Number(req.params.id);
         const seller = req.user;
-        await productService.deleteProduct(id, seller);
-        res.json({ message: 'Product deleted successfully' });
+        const product = await productService.deleteProduct(id, seller);
+        res.json({ message: 'Product deleted successfully', product });
     } catch (err) {
         res.json({ message: err.message });
     }

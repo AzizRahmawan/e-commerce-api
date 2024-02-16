@@ -55,6 +55,9 @@ routes.post('/pay-order', authorizePermission(Permission.CREATE_ORDER), async (r
         const { order_id, amount, cardNumber, cvv, expiryMonth, expiryYear } = req.body;
         const user = req.user;
         const order = await orderService.getUserOrderDetail(order_id, user.id);
+        if (amount < order.order.total) {
+            throw Error('Amount is less of order total')
+        }
         const paymentResult = await fetch('http://localhost:3001/pay', {
             method: 'POST',
             headers: {

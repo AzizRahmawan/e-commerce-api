@@ -115,6 +115,26 @@ class Order {
                 total: totalPriceOrder,
             },
         });
+        const updateProduct = await this.getUserOrderDetail(order.id, user.id);
+        const orderProduct = updateProduct.orderDetail.map((item) => ({
+            id: item.product_id,
+            quantity: item.quantity,
+        }));
+        
+        const updateProductPromises = orderProduct.map(async (product) => {
+            await prisma.product.update({
+                where: {
+                    id: product.id,
+                },
+                data: {
+                    stock: {
+                        decrement: product.quantity,
+                    },
+                },
+            });
+        });
+        await Promise.all(updateProductPromises);
+        await cartService.clearCart(user.id);
 
         const orderDetail = {
             id: order.id,
@@ -141,24 +161,6 @@ class Order {
             throw Error('Order has been paid');
         }
         const order = await this.getUserOrderDetail(order_id, user_id);
-        const orderProduct = order.orderDetail.map((item) => ({
-            id: item.product_id,
-            quantity: item.quantity,
-        }));
-        
-        const updateProductPromises = orderProduct.map(async (product) => {
-            await prisma.product.update({
-                where: {
-                    id: product.id,
-                },
-                data: {
-                    stock: {
-                        decrement: product.quantity,
-                    },
-                },
-            });
-        });
-        await Promise.all(updateProductPromises);
         return order;
     }
 }

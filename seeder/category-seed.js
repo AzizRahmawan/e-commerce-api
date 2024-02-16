@@ -1,16 +1,17 @@
 import prisma from '../app/prisma.js';
 
 async function main() {
-    await prisma.category.deleteMany();
-    const createdCategories = await prisma.category.createMany({
-        data: [
-        { name: 'Electronics' },
-        { name: 'Clothing' },
-        { name: 'Books' },
-        ],
-    });
+  await prisma.product.deleteMany();
+  await prisma.category.deleteMany();
+  const createdCategories = await prisma.category.createMany({
+      data: [
+      { name: 'Electronics' },
+      { name: 'Clothing' },
+      { name: 'Books' },
+      ],
+  });
 
-    return createdCategories;
+  return createdCategories;
 }
 
 main()
