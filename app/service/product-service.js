@@ -2,26 +2,67 @@ import { Role } from "../authorization.js";
 import prisma from "../prisma.js";
 
 class Product {
-    async get() {
+    async get(q, page=1) {
+        const limit = 5;
+        const offset = (page - 1) * limit;
+    
+        if (isNaN(Number(page)) && page) {
+          throw new Error("Invalid page number");
+        }
+    
+        const whereCondition = q ? {
+            OR: [
+                {
+                    name: {
+                        contains: q,
+                    },
+                },
+                {
+                    category: {
+                        name: {
+                            contains: q,
+                        },
+                    },
+                },
+            ],
+        } : {};
+    
         const products = await prisma.product.findMany({
+            where: whereCondition,
             include: {
-            category: {
+                category: {
                 select: {
-                name: true,
+                    name: true,
+                },
+                },
+                seller: {
+                select: {
+                    name: true,
+                },
                 },
             },
-            seller: {
-                select: {
-                name: true,
-                },
-            },
-            },
+            take: limit,
+            skip: offset,
         });
     
-        this.checkListNotEmpty(products);
+        const totalCount = await prisma.product.count({
+            where: whereCondition,
+        });
     
-        return products.map((product) => this.mapProductData(product));
+        const totalPage = Math.ceil(totalCount / limit);
+        const nextPage = page < totalPage ? page + 1 : null;
+    
+        return {
+            data: products.map((product) => this.mapProductData(product)),
+            meta: {
+                total: totalCount,
+                current_page: page,
+                next_page: nextPage,
+                total_page: totalPage,
+            },
+        };
     }
+    
   
     async getById(id) {
         const product = await prisma.product.findUnique({
@@ -118,21 +159,6 @@ class Product {
             price: product.price,
             stock: product.stock,
         };
-    }
-  
-    async findProductById(id) {
-        const product = await prisma.product.findUnique({
-            where: {
-            id,
-            },
-            select: {
-            seller_id: true,
-            },
-        });
-    
-        this.checkProductExists(product);
-    
-        return product;
     }
   
     checkSellerAuthorization(seller, existingProduct) {

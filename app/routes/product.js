@@ -17,7 +17,8 @@ routes.get('/profile', async (req, res) => {
 });
 routes.get("/products", authorizePermission(Permission.BROWSE_PRODUCTS), async (req, res) => {
     try {        
-        const product = await productService.get();
+        const { search, page, } = req.query;
+        const product = await productService.get(search, page);
         res.json(product);
     } catch (err) {
         res.status(404).json({ error: err.message });
