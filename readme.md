@@ -44,13 +44,13 @@
 
 ### User Role Test Cases
 1. **Login with a user account from the database by accessing the login route:**
-   ```http
+   ```
    127.0.0.1:3000/login
    ```
    Provide the email and password from the database (e.g., password1 to password5).
 
 2. **Access product routes at:**
-   ```http
+   ```
    /products
    ```
    Use queries for searching products: `?search=product name or category name` or navigating to the next page with `?page=number of page`.
@@ -64,7 +64,7 @@
    ```
 
 4. **Access the cart routes at:**
-   ```http
+   ```
    /cart
    ```
 
@@ -99,13 +99,13 @@
 
 ### Seller Role Test Cases
 1. **Login with a seller (Role ID: 3) account from the database by accessing the login route:**
-   ```http
+   ```
    127.0.0.1:3000/login
    ```
    Provide the email and password from the database (e.g., password1 to password5).
 
 2. **Add a new product with routes:**
-    ```http
+    ```
     /products
     ```
    with method `POST` and example input:
