@@ -31,7 +31,7 @@ routes.post('/cart', authorizePermission(Permission.ADD_TO_CART), async (req, re
     }
 });
 
-routes.patch('/cart/:id', authorizePermission(Permission.ADD_TO_CART), async (req, res) => {
+routes.put('/cart/:id', authorizePermission(Permission.ADD_TO_CART), async (req, res) => {
     try {
         const productId = Number(req.params.id);
         const user = req.user;

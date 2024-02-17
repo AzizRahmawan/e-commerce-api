@@ -55,7 +55,7 @@
    ```
    Use queries for searching products: `?search=product name or category name` or navigating to the next page with `?page=number of page`.
 
-3. **Add a product to the cart using the `/cart` route with the `POST` method. Provide the product ID and quantity in the request body, for example:**
+3. **Add a product to the cart using `/cart` route with the `POST` method. Provide the product ID and quantity in the request body, for example:**
    ```json
    {
        "productId": 1,
@@ -68,9 +68,20 @@
    /cart
    ```
 
-5. **Place an order using the `/order` route with the `POST` method.**
+5. **Edit product quantity in the cart using `/cart/:id product` with the `PUT` method. Provide the quantity in the request body, for example:**
+   ```json
+   {
+       "quantity": 2
+   }
+   ```
 
-6. **Make a payment for the order by accessing the `/pay-order` route with the `POST` method. Provide data in the request body, for example:**
+6. **Delete product from cart using `/cart/:id product` with the `DELETE` method.**
+
+7. **Clear all product in cart using `/cart/clear` with the `POST` method.**
+
+8. **Place an order using the `/order` route with the `POST` method.**
+
+9. **Make a payment for the order by accessing the `/pay-order` route with the `POST` method. Provide data in the request body, for example:**
    ```json
    {
        "order_id": 5,
@@ -83,8 +94,8 @@
    ```
    Note: Payment for orders can only be made by the user who placed the order.
 
-7. **If payment is successful, the order status will be updated to `status: true`.**
-8. **You can logout with routes `/logout` with method `POST`.**
+10. **If payment is successful, the order status will be updated to `status: true`.**
+11. **You can logout with routes `/logout` with method `POST`.**
 
 ### Seller Role Test Cases
 1. **Login with a seller (Role ID: 3) account from the database by accessing the login route:**
