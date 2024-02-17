@@ -2,7 +2,11 @@ import { faker } from '@faker-js/faker';
 import prisma from '../app/prisma.js';
 
 async function main() {
-  await prisma.product.deleteMany();
+  await prisma.itemOrder.deleteMany()
+  await prisma.order.deleteMany()
+  await prisma.cartProduct.deleteMany()
+  await prisma.cart.deleteMany()
+  await prisma.product.deleteMany()
   
   const category = await prisma.category.findMany();
   const user = await prisma.user.findMany({

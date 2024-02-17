@@ -66,8 +66,39 @@ class Product {
             },
         };
     }
-    
-  
+    async getMyProduct(user_id) {
+        const user = await prisma.user.findUnique({
+            where: {
+                id: user_id,
+            },
+            include: {
+                role: true,
+            }
+        });
+
+        if (user.role.name !== Role.SELLER) {
+            throw new Error("You are not seller");
+        }
+
+        const products = await prisma.product.findMany({
+            where: {
+                seller_id: user_id,
+            },
+            include: {
+                category: {
+                select: {
+                    name: true,
+                },
+                },
+                seller: {
+                select: {
+                    name: true,
+                },
+                },
+            },
+        });
+        return products;
+    }
     async getById(id) {
         const product = await prisma.product.findUnique({
             where: {

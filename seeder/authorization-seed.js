@@ -2,6 +2,12 @@ import prisma from '../app/prisma.js'
 import { Role, Permission, PermissionAssignment } from '../app/authorization.js'
 
 const main = async () => {
+    await prisma.itemOrder.deleteMany()
+    await prisma.order.deleteMany()
+    await prisma.cartProduct.deleteMany()
+    await prisma.cart.deleteMany()
+    await prisma.product.deleteMany()
+    await prisma.token.deleteMany()
     await prisma.user.deleteMany()
     await prisma.permissionRole.deleteMany()
     await prisma.role.deleteMany()

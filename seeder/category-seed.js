@@ -5,9 +5,9 @@ async function main() {
   await prisma.category.deleteMany();
   const createdCategories = await prisma.category.createMany({
       data: [
-      { name: 'Electronics' },
-      { name: 'Clothing' },
-      { name: 'Books' },
+      { id: 1, name: 'Electronics' },
+      { id: 2, name: 'Clothing' },
+      { id: 3, name: 'Books' },
       ],
   });
 

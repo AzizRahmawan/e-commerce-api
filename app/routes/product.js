@@ -25,6 +25,16 @@ routes.get("/products", authorizePermission(Permission.BROWSE_PRODUCTS), async (
     }
 });
 
+routes.get("/my-product", authorizePermission(Permission.BROWSE_PRODUCTS), async (req, res) => {
+    try {        
+        const user_id = req.user.id;
+        const product = await productService.getMyProduct(user_id);
+        res.json(product);
+    } catch (err) {
+        res.status(404).json({ error: err.message });
+    }
+});
+
 routes.get('/products/:id', authorizePermission(Permission.READ_PRODUCT), async (req, res) => {
     try {
         const product = await productService.getById(Number(req.params.id));

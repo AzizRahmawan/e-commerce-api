@@ -46,6 +46,17 @@ class Order {
         return orders;
     }
     async getUserOrder(user_id) {
+        const user = await prisma.user.findUnique({
+            where: {
+                id: user_id,
+            },
+            include: {
+                role: true,
+            }
+        });
+        if (user.role.name !== Role.REGULAR_USER) {
+            throw Error('You are not a user');
+        }
         const order = await prisma.order.findMany({
             where: {
                 user_id: user_id,
