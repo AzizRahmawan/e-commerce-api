@@ -158,6 +158,13 @@ class Order {
     }
 
     async updateStatusOrder(order_id, user_id) {
+        const checkOrder = await this.getUserOrderDetail(order_id, user_id);
+        if(!checkOrder){
+            throw Error('Order not found');
+        }
+        if(checkOrder.order.status){
+            throw Error('Order has been paid');
+        }
         const updateStatusOrder = await prisma.order.update({
             where: {
                 id: order_id,

@@ -58,7 +58,7 @@ routes.post('/pay-order', authorizePermission(Permission.CREATE_ORDER), async (r
         if (amount < order.order.total) {
             throw Error('Amount is less of order total')
         }
-        const paymentResult = await fetch('http://localhost:3001/pay', {
+        const paymentResult = await fetch('http://localhost:3000/pay', {
             method: 'POST',
             headers: {
             'Content-Type': 'application/json',
