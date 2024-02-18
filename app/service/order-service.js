@@ -39,6 +39,15 @@ class Order {
                     }
                 }
             },
+            include: {
+                products: {
+                    where: {
+                        products: {
+                            seller_id: seller_id,
+                        }
+                    }
+                },
+            }
         });
         if (orders.length < 1) {
             throw Error('Order is empty');
